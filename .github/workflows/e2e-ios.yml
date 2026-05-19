@@ -210,6 +210,10 @@ jobs:
           xcrun simctl bootstatus "$UDID" -b
           xcrun simctl launch "$UDID" com.apple.springboard >/dev/null 2>&1 || true
 
+      - name: Check Electrum connectivity
+        timeout-minutes: 5
+        run: npx jest tests/integration/BlueElectrum.test.js --forceExit
+
       - name: Run detox tests
         timeout-minutes: 360
         run: |
