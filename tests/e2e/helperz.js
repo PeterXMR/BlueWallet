@@ -362,14 +362,19 @@ export async function goBack() {
   const candidates = [by.id('BackButton'), by.id('NavigationCloseButton'), by.label('Back'), by.text('Close')];
   const candidateNames = ['id=BackButton', 'id=NavigationCloseButton', 'label=Back', 'text=Close'];
 
+  // iOS duplicates the nav back button's accessibility id: index 0 is the
+  // non-hittable _UIButtonBarButton wrapper, index 1 the hittable
+  // UIAccessibilityBackButtonElement. Their order is not deterministic, so try both.
   let lastErr;
   for (let attempt = 0; attempt < 10; attempt++) {
     for (let i = 0; i < candidates.length; i++) {
-      try {
-        await element(candidates[i]).atIndex(0).tap();
-        return;
-      } catch (err) {
-        lastErr = err;
+      for (let idx = 0; idx < 2; idx++) {
+        try {
+          await element(candidates[i]).atIndex(idx).tap();
+          return;
+        } catch (err) {
+          lastErr = err;
+        }
       }
     }
     await sleep(500);

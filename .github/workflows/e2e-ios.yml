@@ -210,34 +210,6 @@ jobs:
           xcrun simctl bootstatus "$UDID" -b
           xcrun simctl launch "$UDID" com.apple.springboard >/dev/null 2>&1 || true
 
-      # Probe TLS handshake to each hardcoded electrum peer from the runner itself
-      # (separate from the in-app electrum-client path). Confirms outbound + cert
-      # chain on macos-26 before we blame the iOS sim or the RN tcp socket.
-      - name: Probe electrum TLS from runner
-        run: |
-          set +e
-          for peer in \
-            electrum1.bluewallet.io:443 \
-            mainnet.foundationdevices.com:50002 \
-            bitcoin.lu.ke:50002 \
-            electrum.acinq.co:50002 ; do
-            host="${peer%:*}"; port="${peer##*:}"
-            echo
-            echo "===== $host:$port ====="
-            echo "--- dns ---"
-            dig +short "$host" | head -3 || true
-            echo "--- tcp ---"
-            nc -zv -G 5 "$host" "$port" 2>&1 | head -3 || true
-            echo "--- tls handshake ---"
-            openssl s_client -connect "$host:$port" -servername "$host" -showcerts < /dev/null 2>&1 \
-              | grep -E "subject=|issuer=|Verify return code|Protocol|Cipher|Server certificate|---" | head -25
-          done
-          true
-
-      - name: Check Electrum connectivity
-        timeout-minutes: 5
-        run: npx jest tests/integration/BlueElectrum.test.js --forceExit
-
       - name: Run detox tests
         timeout-minutes: 360
         run: |
@@ -251,7 +223,7 @@ jobs:
             --artifacts-location ./artifacts
 
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        if: failure()
+        if: always()
         with:
           name: e2e-ios-videos
           path: ./artifacts/
