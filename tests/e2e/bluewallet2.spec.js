@@ -17,6 +17,7 @@ import {
   tapAndTapAgainIfTextIsNotVisible,
   tapIfTextPresent,
   typeTextIntoAlertInput,
+  waitForFullyVisible,
   waitForId,
   waitForKeyboardToClose,
   waitForSwitchValue,
@@ -134,6 +135,7 @@ describe('BlueWallet UI Tests - import BIP84 wallet', () => {
     await goBack();
     await element(by.id('changeAmountUnitButton')).tap(); // switched to SATS
     await element(by.id('changeAmountUnitButton')).tap(); // switched to FIAT
+    await waitForFullyVisible('BitcoinAmountInput'); // let the unit-switch layout animation settle
     await element(by.id('BitcoinAmountInput')).replaceText('1.1');
     await element(by.id('BlueAddressInputScanQrButton')).tap();
 
@@ -155,6 +157,7 @@ describe('BlueWallet UI Tests - import BIP84 wallet', () => {
     await goBack();
     await goBack();
     await element(by.id('changeAmountUnitButton')).tap(); // switched to BTC
+    await waitForFullyVisible('BitcoinAmountInput'); // let the unit-switch layout animation settle
     await element(by.id('BitcoinAmountInput')).replaceText('0.00015');
     await element(by.id('changeAmountUnitButton')).tap(); // switched to sats
     assert.strictEqual(await extractTextFromElementById('BitcoinAmountInput'), '15000');
@@ -162,6 +165,7 @@ describe('BlueWallet UI Tests - import BIP84 wallet', () => {
     await element(by.id('changeAmountUnitButton')).tap(); // switched to BTC
     assert.strictEqual(await extractTextFromElementById('BitcoinAmountInput'), '0.00015');
     await element(by.id('changeAmountUnitButton')).tap(); // switched to sats
+    await waitForFullyVisible('BitcoinAmountInput'); // let the unit-switch layout animation settle
     await element(by.id('BitcoinAmountInput')).replaceText('50000');
 
     await element(by.id('CreateTransactionButton')).tap();

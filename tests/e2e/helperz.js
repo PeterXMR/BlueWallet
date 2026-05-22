@@ -43,6 +43,18 @@ export async function waitForId(id, timeout = 33000) {
   }
 }
 
+/** Waits until the element is fully (100%) visible — e.g. after a layout animation settles. */
+export async function waitForFullyVisible(id, timeout = 5000) {
+  const callsite = captureCallsite(waitForFullyVisible);
+  try {
+    await waitFor(element(by.id(id)))
+      .toBeVisible(100)
+      .withTimeout(timeout);
+  } catch (err) {
+    rethrowWithCallsite(err, callsite);
+  }
+}
+
 export async function waitForText(text, timeout = 33000) {
   const callsite = captureCallsite(waitForText);
   try {
