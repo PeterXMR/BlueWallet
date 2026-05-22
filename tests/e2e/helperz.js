@@ -371,6 +371,7 @@ export async function goBack() {
       for (let idx = 0; idx < 2; idx++) {
         try {
           await element(candidates[i]).atIndex(idx).tap();
+          console.log(`goBack: tapped ${candidateNames[i]} atIndex(${idx}) on attempt ${attempt}`);
           return;
         } catch (err) {
           lastErr = err;
